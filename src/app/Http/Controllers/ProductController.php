@@ -23,6 +23,12 @@ class ProductController extends Controller
             $query->where('price', '>=', $request->min_price);
         })->when(isset($request->max_price), function($query) use ($request) {
             $query->where('price', '<=', $request->max_price);
+        })->when(!isset($request->sort), function($query) {
+            $query->orderBy('created_at', 'desc');
+        })->when($request->sort == 'price_asc', function($query) {
+            $query->orderBy('price', 'asc');
+        })->when($request->sort == 'price_desc', function($query) {
+            $query->orderBy('price', 'desc');
         })->paginate(20);
 
         $data = [
