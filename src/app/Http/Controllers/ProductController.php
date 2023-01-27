@@ -19,6 +19,10 @@ class ProductController extends Controller
         })->when(isset($request->keyword), function($query) use ($request) {
             $query->where('name', 'LIKE', "%{$request->keyword}%");
             $query->orWhere('maker', 'LIKE', "%{$request->keyword}%");
+        })->when(isset($request->min_price), function($query) use ($request) {
+            $query->where('price', '>=', $request->min_price);
+        })->when(isset($request->max_price), function($query) use ($request) {
+            $query->where('price', '<=', $request->max_price);
         })->paginate(20);
 
         $data = [
