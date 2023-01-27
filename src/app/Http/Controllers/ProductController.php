@@ -15,7 +15,10 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $products = Product::when(isset($request->category_id), function($query) use ($request) {
-            return $query->where('category_id', $request->category_id);
+            $query->where('category_id', $request->category_id);
+        })->when(isset($request->keyword), function($query) use ($request) {
+            $query->where('name', 'LIKE', "%{$request->keyword}%");
+            $query->orWhere('maker', 'LIKE', "%{$request->keyword}%");
         })->paginate(20);
 
         $data = [
