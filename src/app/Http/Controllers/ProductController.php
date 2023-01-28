@@ -15,7 +15,9 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = Product::when(isset($request->category_id), function($query) use ($request) {
+        $products = Product::with(
+            'category'
+        )->when(isset($request->category_id), function($query) use ($request) {
             $query->where('category_id', $request->category_id);
         })->when(isset($request->keyword), function($query) use ($request) {
             $query->where('name', 'LIKE', "%{$request->keyword}%");
