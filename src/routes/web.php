@@ -15,6 +15,11 @@ use \App\Http\Controllers\ProductController;
 */
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::get('/', [ProductController::class, 'index'])->name('top');
-    Route::get('/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::resource('/', ProductController::class)->names([
+        'index' => 'products.index',
+        'create' => 'products.create',
+    ])->except(['show', 'edit', 'update', 'store', 'destroy']);
+    Route::resource('/products', ProductController::class)->only([
+        'edit', 'update', 'store', 'destroy'
+    ]);
 });

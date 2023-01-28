@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -45,7 +46,13 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $product = new Product();
+        $categoris = Category::all();
+        $data = [
+            'product' => $product,
+            'categoris' => $categoris,
+        ];
+        return view('products.create', $data);
     }
 
     /**
@@ -56,18 +63,16 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $this->validate($request, ProductController::validate_params());
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Product $product)
-    {
-        //
+        $product = new Product();
+        $product->category_id = $request->category_id;
+        $product->maker = $request->maker;
+        $product->name = $request->name;
+        $product->price = $request->price;
+        $product->save();
+
+        return redirect(route('products.index'));
     }
 
     /**
@@ -78,7 +83,13 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        $categoris = Category::all();
+        $data = [
+            'product' => $product,
+            'categoris' => $categoris,
+        ];
+
+        return view('products.edit', $data);
     }
 
     /**
@@ -90,7 +101,15 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $this->validate($request, ProductController::validate_params());
+
+        $product->category_id = $request->category_id;
+        $product->maker = $request->maker;
+        $product->name = $request->name;
+        $product->price = $request->price;
+        $product->save();
+
+        return redirect(route('products.index'));
     }
 
     /**
@@ -101,6 +120,17 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
+
+        return redirect(route('products.index'));
+    }
+
+    private static function validate_params() {
+        return [
+            'category_id' => 'required|exists:categories,id',
+            'maker' => 'required|max:255',
+            'name' => 'required|max:255',
+            'price' => 'required|numeric',
+        ];
     }
 }
